@@ -1,8 +1,9 @@
 #include "screen.h"
 #include "descriptors.h"
 #include "memory_m.h"
+#include "libs/math.h"
 
-#define VERSION "1.1v\n"
+#define VERSION "1.2v\n"
 
 
 int kmain(void *mbd,unsigned int magic)
@@ -18,10 +19,9 @@ int kmain(void *mbd,unsigned int magic)
 	screen_print("Enabling Pagination ..\n");
 	//Enable Pagination
 	enable_paging();
-
 	screen_print("Pagination set!\nD0N3!\n");
 	screen_print(VERSION);
-	read(
+
 	while(1);
 	return 0;
 }

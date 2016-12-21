@@ -6,15 +6,11 @@ int strlen(const char *str)
 	while(str[++counter]);
 	return counter;
 }
-int intlen(unsigned int num)
+int intlen(int num)
 {
 	int count = 1;
 
-	while(num > 9)
-	{
-		num /= 10;
-		count++;
-	}
+	for(;num > 9; count ++, num/=10);
 
 	return count;
 }
@@ -86,6 +82,20 @@ char * itoa( int value, char * str, int base )
 		*ptr-- = tmp;
 	}
 	return rc;
+}
+int hex2dec(int num)
+{
+	const unsigned int LEN = intlen(num);
+	int result=0,i=0,cnt=0,temp = pow(10,LEN);
+
+	for(i; i < LEN; i++)
+	{
+		result += pow(((num / temp) % 10),cnt++);
+		temp /= 10;
+	}
+
+	return result;
+	
 }
 int atoi(const char* str)
 {

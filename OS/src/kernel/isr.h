@@ -3,6 +3,7 @@
 #define MAX_IRQ 16
 #include "screen.h"
 #include "libs/communication.h"
+
 struct answer_packet
 {
 	unsigned int ds; //Data segment

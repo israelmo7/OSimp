@@ -21,32 +21,38 @@ void screen_scroll(){
 		vidmem[i-160]=vidmem[i];
 	}
 }
-void screen_print(char *string){
-	int i=0;
-	while(string[i]){ // Until the Null Byte
-		if(y==25){
-			screen_scroll();
-			y=24;
+void putchar(unsigned char c)
+{
+	if(y==25)
+	{
+		screen_scroll();
+		y=24;
+	}
+	if(c > 0x1f && c != 0x7f)
+	{
+		vidmem[2*(x+y*80)]= c;
+		vidmem[2*(x+y*80)+1]=0x02; //color
+		x++;
+		if(x==80)//endofline
+		{ 
+			y++;
+			x=0;
 		}
-		if(string[i]>0x1f&&string[i]!=0x7f){
-			vidmem[2*(x+y*80)]=string[i];
-			vidmem[2*(x+y*80)+1]=0x02;
-			x++;
-			if(x==80){
-				y++;
-				x=0;
-			}
-		}
-		else{
-			switch(string[i]){
+	}
+	else
+	{
+		switch(c)
+		{
 			case 0x08: // Delete Char
-				if(x!=0){
+				if(x!=0)
+				{
 					x--;
 				}
 				break;
 			case 0x09: // Tab
 				x+=4;
-				if(x>=80){
+				if(x>=80)
+				{
 					x=0;
 					y++;
 				}
@@ -55,9 +61,14 @@ void screen_print(char *string){
 				x=0;
 				y++;
 				break;
-			}
 		}
-		i++;
+	}
+}
+void screen_print(char *string){
+	int i=0;
+	while(string[i])
+	{ 
+		putchar(string[i++]);		
 	}
 }
 void intScreen_print(int number,int base)
@@ -66,10 +77,11 @@ void intScreen_print(int number,int base)
 	if(itoa(number,buffer,base))
 		screen_print(buffer);
 	else
-		screen_print("Error: Itoa function\n");
+		screen_print("Error: Itoa function");
+	screen_print("\n");
 }
 char* screen_input(const char* text)
 {
-	
+	 
 }
 
