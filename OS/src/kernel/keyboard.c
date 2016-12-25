@@ -1,5 +1,9 @@
 #include "keyboard.h"
 
+char input_mode_flag = 0;
+char buffer[10] = {'i','s','r','a','e','l',0,0,0,0};
+unsigned short counter =0;
+
 unsigned char uKey_code[128] = 
 {
   0,  27, '!', '@', '#', '$', '%', '^', '&', '*',	/* 9 */
@@ -97,10 +101,15 @@ char getScancode()
 }
 char getchar()
 {
-	return 0;//key_code[getScancode()+1];
+	unsigned char scan_code = inb(0x60);
+
+	return uKey_code[scan_code];
 }
 
-
+void set_input_mode_flag(char flag)
+{
+	input_mode_flag = flag;
+}
 void interrupt_keyboard()
 {
 	unsigned char scan_code = inb(0x60);
@@ -122,8 +131,26 @@ void interrupt_keyboard()
 		}
 		return;
 	}
-	toPrint = uKey_code[scan_code];//((!shift_bit)? uKey_code[scan_code]: lKey_code[scan_code]);
-	putchar(toPrint);
 	
+	if (scan_code == 156)
+	{
+		input_mode_flag = 0;
+		counter = 0;
+		screen_print("\n");
+		buffer[((counter)?counter:9)] = 0;
+		screen_print(buffer);
+		screen_print("\n");
+	}	
+	else
+	{		
 
+		toPrint = uKey_code[scan_code];
+	
+		if(input_mode_flag)
+		{
+			putchar(toPrint);
+			buffer[counter] = toPrint;
+			counter = (counter+1)%9;
+		}
+	}
 }

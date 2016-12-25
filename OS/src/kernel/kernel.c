@@ -3,7 +3,7 @@
 #include "memory_m.h"
 #include "libs/math.h"
 
-#define VERSION "1.2v\n"
+#define VERSION "1.21v\n"
 
 
 int kmain(void *mbd,unsigned int magic)
@@ -21,7 +21,7 @@ int kmain(void *mbd,unsigned int magic)
 	enable_paging();
 	screen_print("Pagination set!\nD0N3!\n");
 	screen_print(VERSION);
-
+	screen_input("Enter text: ");
 	while(1);
 	return 0;
 }

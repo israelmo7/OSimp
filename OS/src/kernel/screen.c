@@ -80,8 +80,11 @@ void intScreen_print(int number,int base)
 		screen_print("Error: Itoa function");
 	screen_print("\n");
 }
-char* screen_input(const char* text)
+char* screen_input(char* text)
 {
-	 
+	screen_print(text);
+	set_input_mode_flag(1);
+	while(!buffer[0]);
+	
 }
 
