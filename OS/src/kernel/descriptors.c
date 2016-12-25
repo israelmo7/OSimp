@@ -1,5 +1,6 @@
 #include "descriptors.h"
 
+//asm's Functions 
 extern void gdt_write(unsigned int);
 extern void idt_write(unsigned int);
 
@@ -298,8 +299,8 @@ struct idt_ptr_struct // IDT descriptor Struct
 
 typedef struct idt_ptr_struct idt_ptr_t;
 
-gdt_entry_t gdt_entries[5];
-idt_entry_t inTab[256];
+gdt_entry_t gdt_entries[5]; // 5 segments (include null descriptor)
+idt_entry_t inTab[256]; // 256 intterupts
 
 
 gdt_entry_t gdt_set_gate(unsigned int base, unsigned int limit, unsigned char access, unsigned char granularity)
@@ -622,6 +623,7 @@ void pic_init()
 	outb(0xA0, 0x11);
 	
 	//Vector Offset [ICW2]
+	//The offset from 0
 	outb(0x21, 0x20);
 	outb(0xA1, 0x28);
 

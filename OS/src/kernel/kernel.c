@@ -19,9 +19,10 @@ int kmain(void *mbd,unsigned int magic)
 	screen_print("Enabling Pagination ..\n");
 	//Enable Pagination
 	enable_paging();
-	screen_print("Pagination set!\nD0N3!\n");
-	screen_print(VERSION);
+	screen_print("Pagination set!\n");
 	screen_input("Enter text: ");
+	screen_print(VERSION);
+	screen_print("D0N3!\n");
 	while(1);
 	return 0;
 }

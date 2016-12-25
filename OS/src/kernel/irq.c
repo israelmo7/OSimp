@@ -17,7 +17,7 @@ void watch()
 void irq_setup()
 {
 	screen_print("IRQ setting ..\n");
-	set_irq_func(0,watch);
-	set_irq_func(1,interrupt_keyboard);	
+	set_irq_func(0,watch); // Set interrupt1 handler to watch function
+	set_irq_func(1,interrupt_keyboard); // " " " " keyboard "
 	screen_print("IRQ set!\n");
 }

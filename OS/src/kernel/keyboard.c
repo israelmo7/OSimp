@@ -3,7 +3,7 @@
 char input_mode_flag = 0;
 char buffer[10] = {'i','s','r','a','e','l',0,0,0,0};
 unsigned short counter =0;
-
+	
 unsigned char uKey_code[128] = 
 {
   0,  27, '!', '@', '#', '$', '%', '^', '&', '*',	/* 9 */
@@ -85,23 +85,9 @@ unsigned char lKey_code[128] =
 };
 //char shift_bit; // flag for shift state
 
-char getScancode()
-{
-	char c =0;
-	do
-	{
-		if(inb(0x60) != c)
-		{
-			c = inb(0x60);
-			if(c>0)
-				return c;
-		}
-	}
-	while(1);
-}
 char getchar()
 {
-	unsigned char scan_code = inb(0x60);
+	unsigned char scan_code = inb(0x60); // port to the keyboard
 
 	return uKey_code[scan_code];
 }
@@ -114,7 +100,7 @@ void interrupt_keyboard()
 {
 	unsigned char scan_code = inb(0x60);
 	char toPrint;
-	if(scan_code & 0x80)
+	if(scan_code & 0x80) // check if released
 	{
 		//released
 		if(scan_code-0x80 == 54 || scan_code-0x80 == 42)
@@ -132,7 +118,7 @@ void interrupt_keyboard()
 		return;
 	}
 	
-	if (scan_code == 156)
+	if (scan_code == 156) // Enter pressed
 	{
 		input_mode_flag = 0;
 		counter = 0;
