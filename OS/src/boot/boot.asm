@@ -1,3 +1,4 @@
+;Runs in RealMode
 global loader
  
 extern kmain
@@ -5,7 +6,7 @@ extern kmain
 MODULEALIGN equ  1<<0
 MEMINFO     equ  1<<1
 FLAGS       equ  MODULEALIGN | MEMINFO
-MAGIC       equ    0x1BADB002
+MAGIC       equ    0x1BADB002 ; tell the sector is bootable
 CHECKSUM    equ -(MAGIC + FLAGS)
  
 section .text
