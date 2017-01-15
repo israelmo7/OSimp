@@ -3,11 +3,7 @@
 
 
 extern void write_cr3(unsigned long* value);
-extern void write_cr0(unsigned long value);
-extern unsigned long read_cr3();
-extern unsigned long read_cr0();
-
-
 void enable_paging();
+void mapper(unsigned long virtual_address);
 
 #endif

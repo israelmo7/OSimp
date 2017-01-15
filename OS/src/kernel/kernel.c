@@ -1,9 +1,9 @@
-#include "screen.h"
-#include "descriptors.h"
-#include "memory_m.h"
-#include "libs/math.h"
+#include "screen.h" // input and output
+#include "descriptors.h" // gdt and idt etc.
+#include "memory_m.h" // memory management
+#include "libs/math.h" // math library
 
-#define VERSION "1.21v\n"
+#define VERSION "\n1.22v\n"
 
 
 int kmain(void *mbd,unsigned int magic)
@@ -16,13 +16,14 @@ int kmain(void *mbd,unsigned int magic)
 
 	gdt_setup();
 	idt_setup();
-	screen_print("Enabling Pagination ..\n");
 	//Enable Pagination
 	enable_paging();
-	screen_print("Pagination set!\n");
-	screen_input("Enter text: ");
+	//malloc(10);
+	//screen_input("Enter text: ");
+	mapper(0x7000);
 	screen_print(VERSION);
 	screen_print("D0N3!\n");
+
 	while(1);
 	return 0;
 }

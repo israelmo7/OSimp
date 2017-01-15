@@ -21,7 +21,7 @@ void screen_scroll(){
 		vidmem[i-160]=vidmem[i]; // go back 2 lines
 	}
 }
-void putchar(unsigned char c)
+void putchar_k(unsigned char c)
 {
 	if(y==25) // end of lines
 	{
@@ -62,12 +62,31 @@ void putchar(unsigned char c)
 		}
 	}
 }
-void screen_print(char *string){
+void screen_print(char* string)
+{	
 	int i=0;
 	while(string[i]) // Until the nullByte
 	{ 
-		putchar(string[i++]);		
+		putchar_k(string[i++]);		
 	}
+}
+void screen_printf(int number_of_strings, ... )
+{	
+	/*
+	va_list ap;
+	va_start(ap, number_of_strings);
+
+	while(number_of_strings--)
+	{
+		char* string = va_arg(ap, char*);
+		int i=0;
+		while(string[i]) // Until the nullByte
+		{ 
+			putchar(string[i++]);		
+		}
+	}
+	va_end(ap);
+	*/
 }
 void intScreen_print(int number,int base)
 {
@@ -76,13 +95,13 @@ void intScreen_print(int number,int base)
 		screen_print(buffer); // and print to screen
 	else
 		screen_print("Error: Itoa function");
-	screen_print("\n");
+	//screen_print("\n");
 }
 char* screen_input(char* text)
 {
 	screen_print(text);
 	set_input_mode_flag(1); // set input mode
-	//while(!buffer[0]); // not done
+	while(get_input_mode_flag()); 
 	
 }
 

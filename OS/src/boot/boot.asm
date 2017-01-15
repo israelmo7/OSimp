@@ -16,10 +16,10 @@ align 4
     dd FLAGS
     dd CHECKSUM
 
-STACKSIZE equ 0x4000
+STACKSIZE equ 0x4000  ;size in bytes
  
 loader:
-	mov  esp, stack + STACKSIZE
+	mov  esp, k_stack + STACKSIZE
 	push eax
 	push ebx
 	
@@ -33,5 +33,5 @@ loader:
 section .bss
  
 align 4
-stack:
-    resb STACKSIZE
+k_stack:
+    resb STACKSIZE ;set kernel stack

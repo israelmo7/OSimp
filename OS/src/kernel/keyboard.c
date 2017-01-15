@@ -96,6 +96,10 @@ void set_input_mode_flag(char flag)
 {
 	input_mode_flag = flag;
 }
+char get_input_mode_flag()
+{
+	return input_mode_flag;
+}
 void interrupt_keyboard()
 {
 	unsigned char scan_code = inb(0x60);
@@ -134,7 +138,7 @@ void interrupt_keyboard()
 	
 		if(input_mode_flag)
 		{
-			putchar(toPrint);
+			putchar_k(toPrint);
 			buffer[counter] = toPrint;
 			counter = (counter+1)%9;
 		}

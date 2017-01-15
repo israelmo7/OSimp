@@ -4,7 +4,7 @@
 #include "libs/communication.h"
 
 
-
+char get_input_mode_flag();
 void set_input_mode_flag(char flag);
 char getchar();
 void interrupt_keyboard();

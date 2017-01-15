@@ -1,6 +1,6 @@
 #include "math.h"
 
-int pow(int number, int pow)
+int power(int number, int pow)
 {
 	int result = 1,
 		i=0;
