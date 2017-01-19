@@ -107,3 +107,20 @@ int atoi(const char* str)
 	}
 	return retValue;
 }
+void strcat(char* dest, char* src)
+{
+	int i =0,j=0;
+	while(dest[i]) 
+		i++;
+	
+	while(src[j])
+		dest[i++] = src[j++];
+	dest[i] = src[j];
+}
+void strcpy(char* dest, char* src)
+{
+	int i=0;
+	while(src[i])
+		dest[i] = src[i++];	
+	dest[i] = src[i];	
+}

@@ -54,7 +54,7 @@ void irq_handler(ans_packet args, unsigned int irqNumber)
 */
 void set_irq_func(unsigned short index, void (*callback_func)())
 {
-	screen_print("IRQ ");
+	screen_print("*IRQ ");
 	intScreen_print(index,10);
 	screen_print(" Function Set!\n");
 	callbacks[index] = callback_func;

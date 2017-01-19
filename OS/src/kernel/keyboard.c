@@ -1,9 +1,10 @@
 #include "keyboard.h"
 
 char input_mode_flag = 0;
-char buffer[10] = {'i','s','r','a','e','l',0,0,0,0};
+
 unsigned short counter =0;
-	
+static char* buffer =0;
+char locker =0;	
 unsigned char uKey_code[128] = 
 {
   0,  27, '!', '@', '#', '$', '%', '^', '&', '*',	/* 9 */
@@ -102,6 +103,7 @@ char get_input_mode_flag()
 }
 void interrupt_keyboard()
 {
+
 	unsigned char scan_code = inb(0x60);
 	char toPrint;
 	if(scan_code & 0x80) // check if released
@@ -114,6 +116,7 @@ void interrupt_keyboard()
 	}
 	else
 	{
+		locker = 0;
 		//pressed
 		if(scan_code == 54 || scan_code == 42)
 		{
@@ -138,9 +141,23 @@ void interrupt_keyboard()
 	
 		if(input_mode_flag)
 		{
+			if(!buffer)
+				buffer = (char*)malloc(2);
+			else
+				buffer = (char*)realloc(buffer,counter+1);
 			putchar_k(toPrint);
-			buffer[counter] = toPrint;
-			counter = (counter+1)%9;
+			buffer[counter++] = toPrint;
+			buffer[counter] = 0;
+
 		}
 	}
+}
+char* getBuffer()
+{
+	return buffer;
+}
+void waitforpress()
+{
+	locker = 1;
+	while(locker);
 }

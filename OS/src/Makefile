@@ -6,22 +6,25 @@ ASM:=nasm
 ASMFLAGS:=-f elf
 
 all: kernel.o boot.o
-	$(LD) $(LDFLAGS) kernel.o boot.o screen.o gdt.o descriptors.o string.o idt.o isr.o irq.o isr_wrapper.o communication.o memory_m.o paging.o keyboard.o math.o
+	$(LD) $(LDFLAGS) kernel.o boot.o screen.o gdt.o descriptors.o string.o idt.o isr.o irq.o isr_wrapper.o communication.o heap.o paging.o paging_lib.o keyboard.o math.o
 
-kernel.o: screen.o descriptors.o communication.o memory_m.o
+kernel.o: screen.o descriptors.o communication.o heap.o
 	$(CC) $(CFLAGS) kernel/kernel.c
 
 boot.o: kernel.o
 	$(ASM) $(ASMFLAGS) -o boot.o boot/boot.asm
 
-memory_m.o: paging.o
-	$(CC) $(CFLAGS) kernel/memory_m.c
+heap.o: paging.o
+	$(CC) $(CFLAGS) kernel/heap.c
 
 gdt.o:
 	$(ASM) $(ASMFLAGS) -o gdt.o kernel/gdt.asm
 
-paging.o:
-	$(ASM) $(ASMFLAGS) -o paging.o kernel/paging.asm	
+paging.o: paging_lib.o
+	$(CC) $(CFLAGS) kernel/paging.c
+
+paging_lib.o:
+	$(ASM) $(ASMFLAGS) -o paging_lib.o kernel/paging_lib.asm	
 	
 isr.o: irq.o keyboard.o
 	$(CC) $(CFLAGS) kernel/isr.c

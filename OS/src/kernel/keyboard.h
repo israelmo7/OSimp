@@ -3,7 +3,8 @@
 #include "screen.h"
 #include "libs/communication.h"
 
-
+char* getBuffer();
+void waitforpress();
 char get_input_mode_flag();
 void set_input_mode_flag(char flag);
 char getchar();

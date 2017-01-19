@@ -328,7 +328,7 @@ void init_idt_entry_t(unsigned short selector, unsigned int offset, unsigned cha
 
 void gdt_setup()
 {
-	screen_print("GDT setting ..\n");
+	//screen_print("GDT setting ..\n");
 	gdt_ptr_t gdt_ptr;
 
 	gdt_ptr.limit = (sizeof(gdt_entry_t) * 5) - 1;
@@ -346,7 +346,7 @@ void gdt_setup()
 
 void idt_setup()
 {
-	screen_print("IDT setting ..\n");
+	//screen_print("IDT setting ..\n");
 	idt_ptr_t idt_ptr;
 	
 	idt_ptr._base = (unsigned int)&inTab;
@@ -617,7 +617,7 @@ void idt_setup()
 }
 void pic_init()
 {
-	screen_print("PIC setting ..\n");
+	//screen_print("PIC setting ..\n");
 	//Init [ICW1]
 	outb(0x20, 0x11);
 	outb(0xA0, 0x11);

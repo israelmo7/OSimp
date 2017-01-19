@@ -9,4 +9,7 @@ int strcmp(const char *a, const char *b);
 char * itoa( int value, char * str, int base );
 int atoi(const char* str);
 int hex2dec(int num);
+void strcat(char* dest, char* src); // append to end
+void strcpy(char* dest, char* src); // override dest
+
 #endif

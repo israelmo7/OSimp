@@ -102,6 +102,6 @@ char* screen_input(char* text)
 	screen_print(text);
 	set_input_mode_flag(1); // set input mode
 	while(get_input_mode_flag()); 
-	
+	return getBuffer();
 }
 
