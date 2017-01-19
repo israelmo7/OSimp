@@ -86,9 +86,9 @@ char * itoa( int value, char * str, int base )
 int hex2dec(int num)
 {
 	const unsigned int LEN = intlen(num);
-	int result=0,i=0,cnt=0,temp = power(10,LEN);
+	int result=0,i,cnt=0,temp = power(10,LEN);
 
-	for(i; i < LEN; i++)
+	for(i=0; i < LEN; i++)
 	{
 		result += power(((num / temp) % 10),cnt++);
 		temp /= 10;

@@ -9,12 +9,11 @@ static unsigned char *h_pointer = heap;
 static d_node* first_node =0;// = (d_node*)init_node(0, 0);
 
 
-d_node* init_node(unsigned char addr, unsigned int size)
+d_node* init_node(unsigned char* addr, unsigned int size)
 {
 	d_node* node;
 	node->_address = addr;
 	node->_size = size;
-	//node->_used = 1;
 	node->_next = 0;
 	return node;
 }
@@ -23,61 +22,73 @@ void setup_heap()
 	first_node = init_node(0, 0);
 	screen_print("Heap set!\n");
 }
+void tester()
+{
+	intScreen_print(first_node->_next->_next->_next->_size,10);
+}
 unsigned char* sbrk(long bytes)
 {
-	if(heap+bytes >= heap && heap+bytes < heap+HEAP_SIZE)
+	unsigned char* previous_point = h_pointer;
+	
+	if(h_pointer+bytes >= heap && h_pointer+bytes < heap+HEAP_SIZE)
 	{
-		unsigned char* previous_point = h_pointer;
 		h_pointer += bytes;
-		return previous_point;
 	}
-	return 0;
+
+	return previous_point;
 } 
-void free(unsigned int addr)
+void free(unsigned char* variable)
 {
-	d_node *temp = first_node;
+	variable = &variable;
+	screen_print("Addr: ");
+	intScreen_print(variable,16);
+	screen_print(" Blocks: ");
+	d_node *temp = first_node;//->_next;
 	while(temp)
 	{
-
-		if(temp->_address == addr)
+		intScreen_print(temp->_address,16);//	
+		screen_print("\n");
+		if(temp->_address == variable)
 		{
-			//Need here to manage the dynamic memory
-			//And to delete the node
-
-			//temp->_used = 0; // for now
+			sbrk(-temp->_size);
+			screen_print("^");
+			fragmentation_manager(variable); // Free and prevents from fragmentation
 			return;
-		}	
+		}
+		temp = temp->_next;	
 	}
 	screen_print("Error: Address not found!\n");
 }
 
-unsigned int malloc(unsigned int size)
+unsigned char* malloc(unsigned int size)
 {
 	d_node *temp = first_node;
 	unsigned char* previous_point;
 
-	while(temp->_next)
+	while(temp->_next) // Find the last block header
 	{
 		temp = temp->_next;
 	}
-	if((previous_point = sbrk(size)) == -1)
+	screen_print("");
+	if((previous_point = sbrk(size)) == -1) // Check if have free memory
 	{
 		screen_print("Error: allocate memory failed!\n");
 		return 0;
 	}
-	
-	temp->_next = (d_node*)init_node(previous_point, size);
 
+	temp->_next = init_node(previous_point, size);
 	return previous_point;
 }
-unsigned int realloc(unsigned int addr, unsigned int size)
+unsigned int realloc(unsigned char* addr, unsigned int size)
 {
+	char makeBigger;
 	d_node* temp = first_node;
 	char* temp_data;
 	while(temp)
 	{
 		if(temp->_address == addr)
 		{
+			makeBigger = (size - temp->_size > 0)?1:0;
 			if(temp->_next)
 			{
 				temp_data = (char*)malloc(strlen(temp->_address));
@@ -101,7 +112,8 @@ unsigned int realloc(unsigned int addr, unsigned int size)
 
 
 	free(addr);
-	//addr = malloc_d(temp_data,size);
+	addr = malloc(size);
+	memcpy(addr,temp_data,size);
 	free(temp_data);
 	return addr;
 }
@@ -111,38 +123,38 @@ void display_dynamic_memory()
 
 	while(temp)
 	{
-		screen_print("|[Addr: ");
+		screen_print("[Addr: ");
 		intScreen_print(temp->_address,16);
 		screen_print("][Size: ");
-		intScreen_print(temp->_size,16);
+		intScreen_print(temp->_size,10);
 		screen_print("]\n");
 
 		temp = temp->_next;
 	}
 }
-unsigned char fragmentation_manager(unsigned int addr)
+unsigned char fragmentation_manager(unsigned char* addr)
 {
-	d_node *temp = first_node,
-	       *pointer;
-	d_node* save_node;	
+	d_node *temp = first_node, *saver, *save_saver;
 		
 	while(temp && temp->_address != addr) // Find the Header
 	{
+		saver = temp;
 		temp = temp->_next;
 	}	
 	if(!temp) return 0; // If not found
 	
-	pointer = temp->_next; // point to next block
-	save_node = temp;      // save the old address	
-	free(addr);
-
-	while(pointer)
+			     // saver is one before the block we want to remove (=temp)
+	save_saver = saver;
+	saver = temp->_next; // temp holds the location of the old address.
+	screen_print("*");
+	while(saver)
 	{
-		memcpy(save_node, pointer->_address, pointer->_size);
-		save_node += pointer->_size;
-		pointer = pointer->_next;
+		memcpy(temp, saver->_address, saver->_size);
+		temp += saver->_size;
+		save_saver = saver;
+		saver = saver->_next;
 	}
-
+	save_saver->_next = 0;
 	return 0;
 }
 
@@ -150,7 +162,7 @@ void memcpy(char* dst, char* src, int len)
 {
 	// dont support NULLs here
 	int i=0;
-	while(i < len)
+	while(i < len && src[i])
 	{
 		dst[i] = src[i];
 	}

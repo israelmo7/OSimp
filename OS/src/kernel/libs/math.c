@@ -3,9 +3,9 @@
 int power(int number, int pow)
 {
 	int result = 1,
-		i=0;
+		i;
 	
-	for(i; i < pow; i++)
+	for(i=0; i < pow; i++)
 	{
 		result *= number;
 	}

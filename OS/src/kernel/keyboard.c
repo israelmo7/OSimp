@@ -131,8 +131,8 @@ void interrupt_keyboard()
 		counter = 0;
 		screen_print("\n");
 		buffer[((counter)?counter:9)] = 0;
-		screen_print(buffer);
-		screen_print("\n");
+		//screen_print(buffer);
+		//screen_print("\n");
 	}	
 	else
 	{		
