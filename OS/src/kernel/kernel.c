@@ -3,7 +3,7 @@
 #include "paging.h" // memory management
 #include "libs/math.h" // math library
 
-#define VERSION "\n1.3v\n"
+#define VERSION "\n1.36v\n"
 
 
 int kmain(void *mbd,unsigned int magic)
@@ -32,9 +32,10 @@ int kmain(void *mbd,unsigned int magic)
 	screen_print(b);
 	screen_print(c);
 
-	//char* temp = screen_input("Enter text: "); // the problem in realloc -> malloc
-	//screen_print(temp);
-	
+	char* temp = screen_input("Enter text: "); // the problem in realloc -> malloc
+	screen_print(temp);
+	display_dynamic_memory();
+
 	screen_print(VERSION);
 	screen_print("D0N3!\n");
 
