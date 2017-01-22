@@ -3,7 +3,7 @@
 #include "paging.h" // memory management
 #include "libs/math.h" // math library
 
-#define VERSION "\n1.36v\n"
+#define VERSION "\n1.361v\n"
 
 
 int kmain(void *mbd,unsigned int magic)
@@ -20,22 +20,24 @@ int kmain(void *mbd,unsigned int magic)
 	enable_paging();
 	setup_heap();
 
-	char *a = (char*)malloc(10); // need to fix malloc
+	char *a = (char*)malloc(10);
 	char *b = (char*)malloc(7);
 	char *c = (char*)malloc(20);
 	
-	//strcpy(a,"Israel ");
-	//strcpy(b, "Moshe ");
-	//strcpy(c, "Dit it!\n");
+	strcpy(a,"Check ");
+	strcpy(b, "for ");
+	strcpy(c, "working.\n");
 	
 	screen_print(a);
 	screen_print(b);
 	screen_print(c);
-	//display_dynamic_memory();
-	char* temp = screen_input("Enter text: "); // the problem in realloc -> malloc
-	flushbuffer();
-	screen_print(temp);
 
+	char* temp = screen_input("\nEnter text: ");
+	screen_print("\n");
+
+	screen_print(temp);
+	screen_print("\n");
+	display_dynamic_memory();	
 
 	screen_print(VERSION);
 	screen_print("D0N3!\n");

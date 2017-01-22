@@ -27,24 +27,22 @@ void setup_heap()
 void tester(unsigned char* addr)
 {
 	d_node* temp = addr;
-	screen_print("Address: ");
+	screen_print("[Address: ");
 	intScreen_print(temp,16);
-	screen_print("\n");
-	screen_print("Size: ");
+	screen_print("][Size: ");
 	intScreen_print(temp->_size,10);
-	screen_print("\n");
-	screen_print("Next: ");
+	screen_print("][Next: ");
 	intScreen_print(temp->_next,16);
-	screen_print("\n");
-	waitforpress();	
+	screen_print("]\n");
 }
 unsigned char* sbrk(long bytesize)
 {
 //	The Function works well, return the next address in the Heap memory.
 
 	unsigned char* previous_point = h_pointer;
-	bytesize += (bytesize < 0)? -sizeof(d_node) : sizeof(d_node);
-		
+
+	bytesize += (bytesize <0)? -sizeof(d_node) : sizeof(d_node);
+
 	if(h_pointer+bytesize > heap && h_pointer+bytesize < heap+HEAP_SIZE)
 	{
 		h_pointer += bytesize;
@@ -59,7 +57,6 @@ unsigned char* sbrk(long bytesize)
 } 
 void free(unsigned char* addr)
 {
-	screen_print("Free\n");
 	addr -= sizeof(d_node); // To header
 
 	d_node *temp = first_node->_next;
@@ -67,13 +64,14 @@ void free(unsigned char* addr)
 	{
 		if(temp == addr)
 		{
-			sbrk(-temp->_size); // +*+*+*+*+*
-			fragmentation_manager(addr); // Free and prevents from fragmentation
+			sbrk(-temp->_size);
+			if(!fragmentation_manager(addr)) // Free and prevents from fragmentation
+				screen_print("Error in fragmentation_manager\n");
 			return;
 		}
 		temp = temp->_next;	
 	}
-	screen_print("Error: Address not found!\n");
+	screen_print("Free function Error: Address not found!\n");
 }
 
 unsigned char* malloc(unsigned int size)
@@ -162,13 +160,10 @@ unsigned char* realloc(unsigned char* addr, unsigned int size)
 }
 void display_dynamic_memory()
 {
-	d_node* temp = first_node;
-	screen_print("Display:\n");
+	d_node* temp = first_node;//->_next;
 	while(temp)
 	{
-		//tester(temp);
-		intScreen_print(temp,16);
-		screen_print(" ");
+		tester(temp);
 		temp = temp->_next;
 	}
 	screen_print("\n");
@@ -179,28 +174,32 @@ unsigned char fragmentation_manager(unsigned char* addr)
 		
 	while(node2free && node2free != addr) // Find the Header
 	{
-		node1after = node2free;
+		node1before = node2free;
 		node2free = node2free->_next;
 	}	
 	if(!node2free) return 0; // If not found
 
-			     //   [first_node]->...->[Save_Saver]->[Temp]->[Saver]->...->[NULL]
+			     //   [first_node]->...->[node1before]->[node2free]->[node1after]->...->[NULL]
 
 			            	// node2free is the node we have to free
-	node1before = node1after;  	// node1before is one before the block we want to remove (=node2free)
+				  	// node1before is one before the block we want to remove
 	node1after = node2free->_next; // node1after is node after the node we try to find
 	
 	while(node1after)
 	{
-
-		memcpy(node2free, node1after, node1after->_size+sizeof(d_node)); // node1after[address] -> temp
-		node2free = node2free + node1after->_size; 			    // make it points to address for the next block
-		node1before = node1after; 				    
+		memcpy(node2free, node1after, node1after->_size+sizeof(d_node));
+		//memcpy(node2free, node1after->_size, sizeof(node1after->_size));
 		
-		node1after = node1after->_next;;
+		node2free->_size = node1after->_size;
+		node2free->_next = node2free + node2free->_size + sizeof(d_node);
+
+		node2free += sizeof(d_node)+node2free->_size;		
+
+		node1before = node2free;
+		node1after = node1after->_next;
 	}
 	node1before->_next = 0;
-	return 0;
+	return 1;
 }
 
 void memcpy(char* dst, char* src, int len)

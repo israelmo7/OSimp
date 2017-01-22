@@ -129,7 +129,6 @@ void interrupt_keyboard()
 	{
 		input_mode_flag = 0;
 		counter = 1;
-		screen_print("\n");
 		//screen_print(buffer);			//If you want just to print -> uncomment
 		//screen_print("\n");
 	}	
