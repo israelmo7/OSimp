@@ -13,14 +13,14 @@ struct dynamic_node
 typedef struct dynamic_node d_node;
 
 void setup_heap();
-unsigned char* init_node(unsigned char* addr, unsigned int size);
-unsigned char* sbrk(long bytes);
-void free(unsigned char* variable);
+void init_node(unsigned char* addr, unsigned int size);
+unsigned char* sbrk(long bytesize);
+void free(unsigned char* addr);
 unsigned char* malloc(unsigned int size);
 unsigned char* realloc(unsigned char* addr, unsigned int size);
 unsigned char fragmentation_manager(unsigned char* addr);
 void display_dynamic_memory();
-void tester();
+void tester(unsigned char* addr);
 
 void memcpy(char* dst, char* src, int len);
 void memset(char* dst, int value, int len);

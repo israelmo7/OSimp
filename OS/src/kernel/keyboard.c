@@ -3,7 +3,7 @@
 char input_mode_flag = 0;
 
 unsigned short counter =0;
-static char* buffer =0;
+static unsigned char* buffer =0;
 char locker =0;	
 unsigned char uKey_code[128] = 
 {
@@ -128,10 +128,9 @@ void interrupt_keyboard()
 	if (scan_code == 156) // Enter pressed
 	{
 		input_mode_flag = 0;
-		counter = 0;
+		counter = 1;
 		screen_print("\n");
-		buffer[((counter)?counter:9)] = 0;
-		//screen_print(buffer);
+		//screen_print(buffer);			//If you want just to print -> uncomment
 		//screen_print("\n");
 	}	
 	else
@@ -141,10 +140,12 @@ void interrupt_keyboard()
 	
 		if(input_mode_flag)
 		{
+			
 			if(!buffer)
-				buffer = (char*)malloc(2);
+				buffer = malloc(2);
 			else
-				buffer = (char*)realloc(buffer,counter+1);
+				buffer = realloc(buffer,counter+2);
+
 			putchar_k(toPrint);
 			buffer[counter++] = toPrint;
 			buffer[counter] = 0;
@@ -160,4 +161,9 @@ void waitforpress()
 {
 	locker = 1;
 	while(locker);
+}
+void flushbuffer()
+{
+	free(buffer);
+	buffer = 0;
 }

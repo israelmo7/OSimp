@@ -3,36 +3,51 @@
 
 
 static unsigned char heap[HEAP_SIZE]; // HEAP_SIZE*(32/8)= HEAP_SIZE*4 bytes
-static unsigned char *h_pointer = heap+sizeof(int);
+static unsigned char *h_pointer = heap+sizeof(d_node);
 static d_node* first_node =0;// = (d_node*)init_node(0, 0);
 
 
-unsigned char* init_node(unsigned char* addr, unsigned int size) // size in bytes
+void init_node(unsigned char* addr, unsigned int size) // size in bytes
 {
+	//	 [    header     ] [   data  ]
+	//Block: [size:4 | next:8] [data:size]
+
 	memcpy(addr, &size, sizeof(size));   // make the size variable in the header 
 	memset(addr+sizeof(size), 0, size+sizeof(d_node*)); //  make the next variable & the data to zero
-	
-	return addr;
+
 }
 void setup_heap()
 {
-	first_node = init_node(heap, 0);
+	init_node(heap, 0);
+	first_node = heap;	
 	screen_print("Heap set and start in ");
 	intScreen_print(heap,16);
 	screen_print("h\n");
 }
-void tester()
+void tester(unsigned char* addr)
 {
-	char* node = 0;
-	intScreen_print(sizeof(d_node),10);
+	d_node* temp = addr;
+	screen_print("Address: ");
+	intScreen_print(temp,16);
+	screen_print("\n");
+	screen_print("Size: ");
+	intScreen_print(temp->_size,10);
+	screen_print("\n");
+	screen_print("Next: ");
+	intScreen_print(temp->_next,16);
+	screen_print("\n");
+	waitforpress();	
 }
-unsigned char* sbrk(long bytes)
+unsigned char* sbrk(long bytesize)
 {
+//	The Function works well, return the next address in the Heap memory.
+
 	unsigned char* previous_point = h_pointer;
-	
-	if(h_pointer+bytes+sizeof(d_node) >= heap && h_pointer+bytes+sizeof(d_node) < heap+HEAP_SIZE)
+	bytesize += (bytesize < 0)? -sizeof(d_node) : sizeof(d_node);
+		
+	if(h_pointer+bytesize > heap && h_pointer+bytesize < heap+HEAP_SIZE)
 	{
-		h_pointer += bytes+sizeof(d_node);
+		h_pointer += bytesize;
 	}
 	else
 	{
@@ -42,15 +57,18 @@ unsigned char* sbrk(long bytes)
 
 	return previous_point;
 } 
-void free(unsigned char* variable)
+void free(unsigned char* addr)
 {
-	d_node *temp = first_node;//->_next;
+	screen_print("Free\n");
+	addr -= sizeof(d_node); // To header
+
+	d_node *temp = first_node->_next;
 	while(temp)
 	{
-		if(temp == variable)
+		if(temp == addr)
 		{
 			sbrk(-temp->_size); // +*+*+*+*+*
-			fragmentation_manager(variable); // Free and prevents from fragmentation
+			fragmentation_manager(addr); // Free and prevents from fragmentation
 			return;
 		}
 		temp = temp->_next;	
@@ -61,12 +79,14 @@ void free(unsigned char* variable)
 unsigned char* malloc(unsigned int size)
 {
 
-	d_node *temp = first_node;
+	d_node *temp = first_node,*saver=0;
 	unsigned char* previous_addr;
 
-	while(temp->_next) // Find the last block header
-		temp = temp->_next;
-
+	while(temp) // Find the last block header
+	{
+		saver = temp;
+		temp = temp->_next;		//temp is the last Block
+	}
 	screen_print("");
 	previous_addr = sbrk(size);
 
@@ -75,38 +95,51 @@ unsigned char* malloc(unsigned int size)
 		screen_print("Error: allocate memory failed!\n");
 		return 0;
 	}
-	temp->_next = init_node(previous_addr, size);
 
+	init_node(previous_addr, size);
+	saver->_next = previous_addr;
 
-	return previous_addr;
+	return previous_addr+sizeof(d_node);
 }
 unsigned char* realloc(unsigned char* addr, unsigned int size)
 {
+	addr -= sizeof(d_node); // To Header
 
 	d_node* temp = first_node;
 	char* temp_data;
 
 	while(temp)
 	{
-		screen_print("Address1: ");
+		/*
+		screen_print("\nAddressTemp => ");
+		intScreen_print(addr,16);
+		screen_print("    ");
 		intScreen_print(temp,16);
-		screen_print("\n");
-
+		screen_print(" <= AddressRealloc\n");
+		*/
 		if(temp == addr)
 		{
+			if(temp->_size >= size)
+				return addr;
 			if(temp->_next)
 			{
-				temp_data = (char*)malloc(temp->_size+sizeof(d_node));
+				//screen_print("Middle\n");
+				temp_data = (char*)malloc(temp->_size+sizeof(d_node))-sizeof(d_node);
 				memcpy(temp_data, temp,temp->_size+sizeof(d_node));
 				break;		
 			}
 			else // last block
 			{
-				if(temp+temp->_size+sizeof(d_node)+size < HEAP_SIZE+temp &&
-				   temp+temp->_size+sizeof(d_node)+size >= 0)
+				//screen_print("Last\n");
+				if(sbrk(size-temp->_size))
 				{
+					/*
+					screen_print("\nAddressReturn => ");
+					intScreen_print(addr,16);
+					screen_print("\n");
+					*/
 					temp->_size = size;
-					return temp+sizeof(d_node);
+					return addr+sizeof(d_node);
 				}
 				screen_print("Error: have no free memory\n");
 				return 0;
@@ -121,8 +154,8 @@ unsigned char* realloc(unsigned char* addr, unsigned int size)
 	}
 
 
-	free(addr);
-	addr = malloc(size);
+	free(addr+sizeof(d_node));
+	addr = malloc(size)-sizeof(d_node);
 	memcpy(addr,temp_data,size+sizeof(d_node));
 	free(temp_data);
 	return addr;
@@ -130,21 +163,15 @@ unsigned char* realloc(unsigned char* addr, unsigned int size)
 void display_dynamic_memory()
 {
 	d_node* temp = first_node;
-
+	screen_print("Display:\n");
 	while(temp)
 	{
-		screen_print("[RealAddress: ");
+		//tester(temp);
 		intScreen_print(temp,16);
-		screen_print("][Addr: ");
-		intScreen_print(temp+temp->_size,16);
-		screen_print("][Size: ");
-		intScreen_print(temp->_size,10);
-		screen_print("][Next: ");
-		intScreen_print(temp->_next,16);
-		screen_print("]\n");
-
+		screen_print(" ");
 		temp = temp->_next;
 	}
+	screen_print("\n");
 }
 unsigned char fragmentation_manager(unsigned char* addr)
 {

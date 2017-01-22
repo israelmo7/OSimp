@@ -24,17 +24,18 @@ int kmain(void *mbd,unsigned int magic)
 	char *b = (char*)malloc(7);
 	char *c = (char*)malloc(20);
 	
-	strcpy(a,"Israel ");
-	strcpy(b, "Moshe ");
-	strcpy(c, "Dit it!\n");
+	//strcpy(a,"Israel ");
+	//strcpy(b, "Moshe ");
+	//strcpy(c, "Dit it!\n");
 	
 	screen_print(a);
 	screen_print(b);
 	screen_print(c);
-
+	//display_dynamic_memory();
 	char* temp = screen_input("Enter text: "); // the problem in realloc -> malloc
+	flushbuffer();
 	screen_print(temp);
-	display_dynamic_memory();
+
 
 	screen_print(VERSION);
 	screen_print("D0N3!\n");
